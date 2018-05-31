@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Waves and Oscillations</title>
+    <script type="text/javascript" src="paper-full.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script type="text/paperscript" canvas="canvas">
+
+		var text = new PointText({
+		point: view.center,
+		content: 'Controls :\n'+
+		'Up key - Increase normal node by 1\n'+
+		'Down key - Decrease normal node by 1\n'+
+		'Left key - Increase number of mass by 1\n'+
+		'Up key - Decrease number of mass by 1\n'+
+		'\nSuvendu Barik - B.Sc (Research) - Physics',
+		justification: 'center',
+		fontSize: 15
+		});
+
+		// Variables
+		var N = 6;
+		var T = 4; //Newtons
+		var m = 0.05; //Kgs
+		var Cn = 75; //m
+		var g = 9.81; //m per s^2
+		var pi = 3.14159;
+		var w0 = Math.sqrt(T/(m*g));
+
+    //Normal node
+		var n = 1;
+
+		// Path
+		var myPath = new Path({
+			strokeColor: [0.8],
+			strokeWidth: 2
+		});
+
+		// Path construction
+		myPath.strokeColor = 'grey';
+		for(var i=0; i<=N+1; i++)
+		{
+			myPath.add(new Point(100+Cn*i,200))
+		}
+
+		// Path selection, to highlight the structure
+		myPath.selected = true;
+
+		//Functions, to describe the wave motions
+		function omega(n)
+		{
+			return 2*w0*Math.sin(n*pi/(2*(N+1)));
+		}
+
+		function Amp(p,n)
+		{
+			return Cn*Math.sin((p*n*pi)/(N+1));
+		}
+
+		function y(p,n,t)
+		{
+			return Amp(p,n)*Math.cos(omega(n)*t);
+		}
+
+		var isSmooth = false;
+		// Click option
+		function onMouseUp(event)
+		{
+			if(!isSmooth)
+			{
+				isSmooth = true;
+			}else if(isSmooth)
+			{
+				isSmooth = false;
+			}
+	}
+
+  // Type options
+	function onKeyDown(event)
+	{
+	// When a key is pressed, set the content of the text item:
+	  if(event.key=='up')
+		{
+			n=n+1;
+		}
+		if(event.key=='down')
+		{
+			n=n-1;
+		}
+		if(event.key=='left')
+		{
+			myPath.removeSegment(N+1);
+			N = N-1;
+		}
+		if(event.key=='right')
+		{
+			N = N+1;
+			myPath.add(new Point(100+Cn*(N+1),200))
+
+		}
+		text.content = 'Number of mass on string : '+N+'\n'+
+		 'Normal node of the system : '+n+'\n\n'+
+		 'Controls :\n'+
+		 'Up key - Increase normal node by 1\n'+
+		 'Down key - Decrease normal node by 1\n'+
+		 'Left key - Increase number of mass by 1\n'+
+		 'Up key - Decrease number of mass by 1\n'+
+		 '\nSuvendu Barik - B.Sc (Research) : Physics (Batch of 2019) - Shiv Nadar University';
+	}
+
+
+	//time
+	var t = 0; // seconds
+	var del = 0.1; // seconds
+
+	// Animator
+
+	function onFrame(event)
+	{
+		for(var i=0; i<=N+1; i++)
+		{
+			var segment = myPath.segments[i];
+			segment.point.y = 200 + y(i,n,t);
+		}
+		t+=del;
+		if(isSmooth)
+		{
+		//	myPath.smooth();
+		}
+	}
+
+
+
+	</script>
+</head>
+<body>
+    <canvas id="canvas" resize></canvas>
+</body>
+</html>
